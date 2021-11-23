@@ -1537,7 +1537,8 @@ const double dvv2[256]{ -0.03459,
 
 int main(int argc, char* argv[])
 {
-	double r = 0.225;
+    //cout << l2g(0.4454, 0) << endl;
+    double r = 0.225;
 	VideoCapture cap("C:/Users/Lucas/Downloads/homer1.avi");
 	VideoCapture cap2("C:/Users/Lucas/Downloads/homer1mirrored.avi");
 
@@ -1579,6 +1580,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channels(3);
 		// split img:
 		split(frame, channels);
+        cout << channels[2].at<double>(55, 55) << endl;
 		Mat ly1(frame.rows, frame.cols, CV_64FC3);
 		Mat cha1, cha2, cha3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1601,6 +1603,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channelsh(3);
 		// split img:
 		split(frame2, channelsh);
+        cout << channelsh[2].at<double>(55, 55) << endl;
 		Mat ly2(frame2.rows, frame2.cols, CV_64FC3);
 		Mat chah1, chah2, chah3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1615,6 +1618,9 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+
+        cout << channelash[2].at<double>(55, 55) << endl;
+        cout << channelas[2].at<double>(55, 55) << endl;
 
 		//merge(channelash, 3, ly2);
 
@@ -1654,7 +1660,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-
+        cout << channelus[2].at<double>(55, 55) << endl;
 		merge(channelus, 3, x1);
 		x1.convertTo(x1, CV_8UC3);
 
@@ -1680,7 +1686,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-
+        cout << channelush[2].at<double>(55, 55) << endl;
 		merge(channelush, 3, x2);
 		x2.convertTo(x2, CV_8UC3);
 
