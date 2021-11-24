@@ -4,11 +4,18 @@
 <meta charset="utf-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Hello OpenCV.js</title>
+<style>
+/* width */
+::-webkit-scrollbar {
+    display: none;
+}
+
+</style>
 </head>
 <body>
     <h2>Hello OpenCV.js</h2>
     <button onclick="onloadCallback()" type="button">Play Video</button>
-   <canvas id="canvasOutput" style="padding-left: 0; padding-right: 0; margin-top: 50px; margin-bottom:100px; margin-left: auto; margin-right: auto; display: block; " width="720" height="360"></canvas>
+   <canvas id="canvasOutput" style="padding-left: 0; padding-right: 0; margin-top: 50px; margin-bottom:100px; margin-left: -8px; margin-right: -8px; display: block; " width="1024" height="360"></canvas>
     <div class="caption">canvasOutput</div>  
 
 
@@ -1687,7 +1694,7 @@ console.log(urlParams.run);
           setTimeout(function() {
     console.log("voor"); 
     onloadCallback();
-}, 2500);
+}, 10000);
         }
        
 
@@ -1857,11 +1864,17 @@ channelos.get(2).data[k * 360 + j] = channelos.get(2).data[k * 360 + j] - channe
         
         cv.merge(dstt, dst);
         cv.merge(dstt2, dst2)
-        
+        let WitWidth = 304;
+        let WitMat1 = new cv.Mat(360, WitWidth/4, cv.CV_8UC4);
+        let WitMat = new cv.Mat(360, WitWidth/2, cv.CV_8UC4);
+        let WitMat2 = new cv.Mat(360, WitWidth/4, cv.CV_8UC4);
         let matVec = new cv.MatVector();
+        matVec.push_back(WitMat1);
         matVec.push_back(dst);
+        matVec.push_back(WitMat);
         matVec.push_back(dst2);
-        let canvas1 = new cv.Mat(360, 720, cv.CV_8UC4);
+        matVec.push_back(WitMat2);
+        let canvas1 = new cv.Mat(360, 720 + WitWidth, cv.CV_8UC4);
         cv.hconcat(matVec, canvas1);
         cv.imshow("canvasOutput", canvas1)
         let delay = 1000/FPS - (Date.now() - begin);
