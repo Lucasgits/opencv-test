@@ -1671,7 +1671,7 @@ function onOpenCvReady() {
         } else {
             var framenu = 1;
         }
-var dataImage = localStorage.getItem("imgdatae" + parseInt(framenu));
+var dataImage = localStorage.getItem("imgdatae");
 if (dataImage != null) {
     console.log(dataImage);
     var imagee = new Image();
@@ -1880,7 +1880,7 @@ channelos.get(2).data[k * 360 + j] = channelos.get(2).data[k * 360 + j] - channe
         var dataURL2 = document.getElementById("canvasOutput").toDataURL("image/png");
         var imgdatae = dataURL2.replace(/^data:image\/(png|jpg);base64,/, "");
         console.log(imgdatae);
-        localStorage.setItem("imgdatae" + joe, imgdatae);
+        localStorage.setItem("imgdatae", imgdatae);
         
         window.location.replace("https://master.d1zjlegzyg3st3.amplifyapp.com/?run=1&frame=" + joe);
 
