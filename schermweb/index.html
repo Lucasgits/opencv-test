@@ -8,26 +8,38 @@
 <body>
     <h2>Hello OpenCV.js</h2>
     <button onclick="onloadCallback()" type="button">Play Video</button>
-   <canvas id="canvasOutput" style="padding-left: 0; padding-right: 0; margin-top: 250px; margin-bottom:100px; margin-left: auto; margin-right: auto; display: block; "></canvas>
+   <canvas id="canvasOutput" style="padding-left: 0; padding-right: 0; margin-top: 50px; margin-bottom:100px; margin-left: auto; margin-right: auto; display: block; " width="720" height="360"></canvas>
     <div class="caption">canvasOutput</div>  
 
 
 <!-- https://www.w3schools.com/html/mov_bbb.mp4-->
 <div>
   <div class="inputoutput">
+      <canvas id="canvasInput" width="360" height="360"></canvas>
+      <canvas id="canvasInput2" width="360" height="360"></canvas>
       
-    <video id="videoInput2" muted="muted" src="homer1.mp4"  width="360" height="360"  type="video/mp4"></video>
-    <video id="videoInput3" muted="muted" src="homer1mirrored.mp4"  width="360" height="360"  type="video/mp4"></video>
-    
+     <video id="videoInput2" muted="muted" src="homer1.mp4"  width="360" height="360" style="display: inline" type="video/mp4"></video>
+    <video id="videoInput3" muted="muted" src="homer1mirrored.mp4"  width="360" height="360" style="display: inline" type="video/mp4"></video>
+  
   </div>
+  <canvas id="canvasOutput1" width="360" height="360" ></canvas>
+    <canvas id="canvasOutput3" width="360" height="360" ></canvas>
   <div class="inputoutput">
-   
+    <img id="inputimage" width="360" height="360"
+src="Knipseltje.JPG">
+<img id="inputimage2" width="360" height="360"
+src="tempsnip.jpg">
     <canvas id="canvasOutput2" ></canvas>
+    
   </div>
 </div>
 
  <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 <script type="text/javascript">
+let video2 = document.getElementById("videoInput2"); // video is the id of video tag
+  let video3 = document.getElementById("videoInput3"); // video is the id of video tag
+  video2.currentTime = 1;
+  video3.currentTime = 1;
  const dv = [
     12.9652694326214, 14.3100660575444, 23.2339379953351, 29.3366138139417,
     34.2571945816738, 38.4836576885365, 42.2402728420955, 45.6520297835429,
@@ -1552,6 +1564,8 @@ const dvv2 = [ -0.03459,
                              5.36766429808663,
                              5.40508703791338,
                              5.44262044143586];
+const FPS = 25;
+
 
 
 
@@ -1624,6 +1638,7 @@ function l2g (luminanceinput, kanaal) {
 }
 
 function onOpenCvReady() {
+    
   if (cv.getBuildInformation) {
      console.log(cv.getBuildInformation());
      onloadCallback();
@@ -1631,37 +1646,99 @@ function onOpenCvReady() {
     //wait for opencv.js compilation;
       cv["onRuntimeInitialized"] = () => {
         console.log(cv.getBuildInformation());
-          //onloadCallback();
+
         };
     }
+    
 }
+        var urlParams;
+(window.onpopstate = function () {
+    var match,
+        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+  
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+})();
+ if(urlParams.frame != null) {
+            console.log("iets")
+            var framenu = urlParams.frame;
+            video2.currentTime = urlParams.frame/FPS;
+            video3.currentTime = urlParams.frame/FPS;
+        } else {
+            var framenu = 1;
+        }
+var dataImage = localStorage.getItem("imgdatae" + parseInt(framenu));
+if (dataImage != null) {
+    console.log(dataImage);
+    var imagee = new Image();
+imagee.onload = function() {
+  document.getElementById("canvasOutput").getContext("2d").drawImage(imagee, 0, 0);
+};
+imagee.src = "data:image/png;base64," + dataImage;
+}        
+
+
+console.log(urlParams.run);
+        if (urlParams.run == 1) {
+          setTimeout(function() {
+    console.log("voor"); 
+    onloadCallback();
+}, 10000);
+        }
+       
 
 function onloadCallback() {
-  let video2 = document.getElementById("videoInput2"); // video is the id of video tag
-  let video3 = document.getElementById("videoInput3"); // video is the id of video tag
-  video2.play()
-  video3.play()
-  let src = new cv.Mat(video2.height, video2.width, cv.CV_8UC4);
-  let src2 = new cv.Mat(video3.height, video3.width, cv.CV_8UC4);
+    console.log("start");
   
-  let dst = new cv.Mat(video2.height, video2.width, cv.CV_8UC1);
-  let cap = new cv.VideoCapture(video2);
-  let dst2 = new cv.Mat(video3.height, video3.width, cv.CV_8UC1);
-  let cap2 = new cv.VideoCapture(video3);
-  const FPS = 30;
-  //console.log(g2l);
-  //console.log(g2l(73,0));
-     //  console.log("tja");
+  //video2.play()
+  //video3.play()
+  //let src = new cv.Mat(video2.height, video2.width, cv.CV_8UC4);
+  //let src2 = new cv.Mat(video3.height, video3.width, cv.CV_8UC4);
+      var canvasteste = document.getElementById("canvasInput");
+  var ctxteste = canvasteste.getContext("2d");
+  ctxteste.drawImage(video2, 0, 0, 360, 360);
+  var canvasteste2 = document.getElementById("canvasInput2");
+  var ctxteste2 = canvasteste2.getContext("2d");
+  ctxteste2.drawImage(video3, 0, 0, 360, 360);
   
+ // let cool = document.getElementById("canvasInput");
+ // let cool2 = document.getElementById("canvasInput2");
+  
+
+  var canvastest = document.getElementById("canvasOutput1");
+  var ctxtest = canvastest.getContext("2d");
+  ctxtest.drawImage(video2, 0, 0, 360, 360);
+  let imgDatatest = ctxtest.getImageData(0, 0, canvastest.width, canvastest.height);
+  let src = cv.matFromImageData(imgDatatest);
+  var canvastest2 = document.getElementById("canvasOutput3");
+  var ctxtest2 = canvastest2.getContext("2d");
+  ctxtest2.drawImage(video3, 0, 0, 360, 360);
+  let imgDatatest2 = ctxtest2.getImageData(0, 0, canvastest2.width, canvastest2.height);
+  let src2 = cv.matFromImageData(imgDatatest2);
+  
+    console.log(src);
+  let dst = new cv.Mat(360, 360, cv.CV_8UC1);
+  //let cap = new cv.VideoCapture(video2);
+  let dst2 = new cv.Mat(360, 360, cv.CV_8UC1);
+  //let cap2 = new cv.VideoCapture(video3);
+  
+  
+  const r = 0.225;
+ 
   // schedule first one.
   setTimeout(processVideo, 0);
+  //processVideo();
 
   function processVideo() {
     try {
         let beta = 1;
         let begin = Date.now();
-        cap.read(src);
-        cap2.read(src2);
+        //cap.read(src);
+       // cap2.read(src2);
         //cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
         //cv.cvtColor(src2, dst2, cv.COLOR_RGBA2GRAY);
         
@@ -1681,7 +1758,7 @@ function onloadCallback() {
         
 		for (let j = 0; j < 360; j++) {
 			for (let k = 0; k < 360; k++) {
-			if (src.isContinuous()) {
+			if (true) {
                 channelas.get(0).data[k * 360 + j]  = 100 * g2l(src.data[k * 360 * 4 + j * 4], 0);
                 channelas.get(1).data[k * 360 + j]  = 100 * g2l(src.data[k * 360 * 4 + j * 4 + 1], 1);
                 channelas.get(2).data[k * 360 + j]  = 100 * g2l(src.data[k * 360 * 4 + j * 4 + 2], 2);
@@ -1690,7 +1767,7 @@ function onloadCallback() {
              }		
 			}
 		}
-		
+		console.log("hier");
 		let cha1 = new cv.Mat.zeros(360,360, cv.CV_8U);
         let cha2 = new cv.Mat.zeros(360,360, cv.CV_8U);
         let cha3 = new cv.Mat.zeros(360,360, cv.CV_8U);
@@ -1705,7 +1782,7 @@ function onloadCallback() {
         
 		for (let j = 0; j < 360; j++) {
 			for (let k = 0; k < 360; k++) {
-			if (src2.isContinuous()) {
+			if (true) {
                 channelos.get(0).data[k * 360 + j]  = 100 * g2l(src2.data[k * 360 * 4 + j * 4], 0);
                 channelos.get(1).data[k * 360 + j]  = 100 * g2l(src2.data[k * 360 * 4 + j * 4 + 1], 1);
                 channelos.get(2).data[k * 360 + j]  = 100 * g2l(src2.data[k * 360 * 4 + j * 4 + 2], 2);
@@ -1715,6 +1792,23 @@ function onloadCallback() {
 			}
 		}
 		
+		for (let j = 0; j < 360; j++) {
+			for (let k = 0; k < 360; k++) {
+			if (true) {		
+channelos.get(0).data[k * 360 + j] = channelos.get(0).data[k * 360 + j] * (1 - r) + 100 * r;
+channelas.get(0).data[k * 360 + j] = channelas.get(0).data[k * 360 + j] * r;
+channelos.get(1).data[k * 360 + j] = channelos.get(1).data[k * 360 + j] * (1 - r) + 100 * r;
+channelas.get(1).data[k * 360 + j] = channelas.get(1).data[k * 360 + j] * r;
+channelos.get(2).data[k * 360 + j] = channelos.get(2).data[k * 360 + j] * (1 - r) + 100 * r;
+channelas.get(2).data[k * 360 + j] = channelas.get(2).data[k * 360 + j] * r;
+channelos.get(0).data[k * 360 + j] = channelos.get(0).data[k * 360 + j] - channelas.get(0).data[k * 360 + j];
+channelos.get(1).data[k * 360 + j] = channelos.get(1).data[k * 360 + j] - channelas.get(1).data[k * 360 + j];
+channelos.get(2).data[k * 360 + j] = channelos.get(2).data[k * 360 + j] - channelas.get(2).data[k * 360 + j];
+               
+             }		
+			}
+		}
+
 
 		
 		let dstta = new cv.Mat.zeros(360, 360, cv.CV_8U);
@@ -1726,6 +1820,9 @@ function onloadCallback() {
 		dstt.push_back(dsttb);
 		dstt.push_back(dsttc);
 		dstt.push_back(dsttd);
+		
+		
+		
 		let dstta2 = new cv.Mat.zeros(360, 360, cv.CV_8U);
 		let dsttb2 = new cv.Mat.zeros(360, 360, cv.CV_8U);
 		let dsttc2 = new cv.Mat.zeros(360, 360, cv.CV_8U);
@@ -1770,11 +1867,30 @@ function onloadCallback() {
         let delay = 1000/FPS - (Date.now() - begin);
         beta = beta + 1;
         console.log(beta);
-        setTimeout(processVideo, delay);  
+        joe = parseInt(framenu) + 1;
+        
+        //boe =document.getElementById("canvasOutput").toBlob(function(blob) {
+  //var newImg = document.createElement('img'),
+  //    url = URL.createObjectURL(blob);
+//console.log(url);
+//console.log("https://schermding.000webhostapp.com/test4.html?run=1&frame=" + joe + "&blob=" +  encodeURIComponent(url)); 
+//window.location.replace("https://schermding.000webhostapp.com/test4.html?run=1&frame=" + joe + "&blob=" +  encodeURIComponent(url));
+//}); //.toDataURL("image/png");
+
+        var dataURL2 = document.getElementById("canvasOutput").toDataURL("image/png");
+        var imgdatae = dataURL2.replace(/^data:image\/(png|jpg);base64,/, "");
+        console.log(imgdatae);
+        localStorage.setItem("imgdatae" + joe, imgdatae);
+        
+        window.location.replace("https://master.d1zjlegzyg3st3.amplifyapp.com/?run=1&frame=" + joe);
+
+        //setTimeout(onloadCallback, delay + 10);  
     } catch (err) {
       console.log("An error occurred! " + err);
     }
 };
+
+
 
 }
 
