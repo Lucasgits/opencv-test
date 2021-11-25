@@ -3,9 +3,11 @@
  //#include "l2g2.h"
 //#include "g2l2.h"
 #include<cmath>
+#include <chrono>
 
 using namespace cv;
 using namespace std;
+using namespace std::chrono;
 
 double l2g(double luminanceinput, int kanaal);
 double g2l(int grayinput, int kanaal);
@@ -1534,13 +1536,15 @@ const double dvv2[256]{ -0.03459,
                                  5.36766429808663,
                                  5.40508703791338,
                                  5.44262044143586 };
+double tijdperframe[1000];
+int lengthframes = 0;
 
 int main(int argc, char* argv[])
 {
     //cout << l2g(0.4454, 0) << endl;
     double r = 0.225;
-	VideoCapture cap("C:/Users/Lucas/Downloads/homer1.avi");
-	VideoCapture cap2("C:/Users/Lucas/Downloads/homer1mirrored.avi");
+	VideoCapture cap("C:/Users/Lucas/Downloads/homer1.mp4");
+	VideoCapture cap2("C:/Users/Lucas/Downloads/homer1mirrored.mp4");
 
 	if (cap.isOpened() == false || cap2.isOpened() == false)
 	{
@@ -1552,9 +1556,11 @@ int main(int argc, char* argv[])
 	double fps = cap.get(CAP_PROP_FPS);
 	
 	namedWindow("hier", WINDOW_NORMAL);
+    int teller = 0;
 
 	while (true)
 	{
+        auto start = high_resolution_clock::now();
 		setWindowProperty("hier", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 		//Mat frame = imread("C:/Users/Lucas/Pictures/pen.jpg");
 		//Mat frame2 = imread("C:/Users/Lucas/Pictures/Knipsel.PNG");
@@ -1580,7 +1586,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channels(3);
 		// split img:
 		split(frame, channels);
-        cout << channels[2].at<double>(55, 55) << endl;
+        //cout << channels[2].at<double>(55, 55) << endl;
 		Mat ly1(frame.rows, frame.cols, CV_64FC3);
 		Mat cha1, cha2, cha3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1603,7 +1609,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channelsh(3);
 		// split img:
 		split(frame2, channelsh);
-        cout << channelsh[2].at<double>(55, 55) << endl;
+        //cout << channelsh[2].at<double>(55, 55) << endl;
 		Mat ly2(frame2.rows, frame2.cols, CV_64FC3);
 		Mat chah1, chah2, chah3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1619,8 +1625,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-        cout << channelash[2].at<double>(55, 55) << endl;
-        cout << channelas[2].at<double>(55, 55) << endl;
+        //cout << channelash[2].at<double>(55, 55) << endl;
+        //cout << channelas[2].at<double>(55, 55) << endl;
 
 		//merge(channelash, 3, ly2);
 
@@ -1660,7 +1666,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-        cout << channelus[2].at<double>(55, 55) << endl;
+        //cout << channelus[2].at<double>(55, 55) << endl;
 		merge(channelus, 3, x1);
 		x1.convertTo(x1, CV_8UC3);
 
@@ -1686,7 +1692,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-        cout << channelush[2].at<double>(55, 55) << endl;
+        //cout << channelush[2].at<double>(55, 55) << endl;
 		merge(channelush, 3, x2);
 		x2.convertTo(x2, CV_8UC3);
 
@@ -1698,13 +1704,27 @@ int main(int argc, char* argv[])
 		
 
 		imshow("hier", res);
-		if (waitKey(1000 / fps) == 27)
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        tijdperframe[teller] = duration.count();
+        teller = teller + 1;
+        cout << duration.count() << endl;
+       
+       
+        if (waitKey(1000 / fps) == 27)
 		{
 			cout << "Esc key is pressed by user. Stopping the video" << endl;
+           
 			break;
 		}
 	}
-
+    cout << cap.get(CAP_PROP_FRAME_COUNT) << endl;
+    double som = 0;
+    for (size_t jj = 0; jj < cap.get(CAP_PROP_FRAME_COUNT); jj++) {
+        cout << tijdperframe[jj] << "  " << jj << ' ';
+        som = som + tijdperframe[jj];
+    }
+    cout << endl << "average: tijdperframe =" << som / (1000 * cap.get(CAP_PROP_FRAME_COUNT)) << "milliseconds" << endl;
 	waitKey(0);
 	return 0;
 
