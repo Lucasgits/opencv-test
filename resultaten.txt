@@ -1,0 +1,32 @@
+PSNR
+MSSIM
+
+11.6716
+62.791
+12.7519
+68.6738
+average: PSNR =14.4674
+
+average: MSSIM = 65.2848
+
+average2: PSNR =12.6131
+
+average2: MSSIM = 66.7908
+
+average: PSNR =14.4674
+
+average: MSSIM = 65.2848
+
+average2: PSNR =9.26386
+
+average2: MSSIM = 37.0254
+
+Sintel: erg donker >>
+average: PSNR =12.7023
+
+average: MSSIM = 12.3222
+
+average2: PSNR =5.90059
+
+average2: MSSIM = 9.66925
+

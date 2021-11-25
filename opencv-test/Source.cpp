@@ -1,4 +1,4 @@
-#include <opencv2/opencv.hpp>
+﻿#include <opencv2/opencv.hpp>
 #include <iostream>
  //#include "l2g2.h"
 //#include "g2l2.h"
@@ -9,6 +9,7 @@ using namespace std;
 
 double l2g(double luminanceinput, int kanaal);
 double g2l(int grayinput, int kanaal);
+Scalar getMSSIM(const Mat& I1, const Mat& I2);
 
 const double dv[1002]{
         12.9652694326214, 14.3100660575444, 23.2339379953351, 29.3366138139417,
@@ -1535,13 +1536,21 @@ const double dvv2[256]{ -0.03459,
                                  5.40508703791338,
                                  5.44262044143586 };
 
+double psnrvector [1000];
+double MSSIMvector[1000];
+double psnrvector2[1000];
+double MSSIMvector2[1000];
+
 int main(int argc, char* argv[])
 {
     //cout << l2g(0.4454, 0) << endl;
     double r = 0.225;
-	VideoCapture cap("C:/Users/Lucas/Downloads/homer1.avi");
-	VideoCapture cap2("C:/Users/Lucas/Downloads/homer1mirrored.avi");
+	VideoCapture cap("C:/Users/Lucas/Downloads/sintel1m720p.mp4");
+	VideoCapture cap2("C:/Users/Lucas/Downloads/jellyfish_360_10s_20MB.mp4");
 
+    
+    
+    
 	if (cap.isOpened() == false || cap2.isOpened() == false)
 	{
 		cout << "Cannot open the video file" << endl;
@@ -1552,9 +1561,10 @@ int main(int argc, char* argv[])
 	double fps = cap.get(CAP_PROP_FPS);
 	
 	namedWindow("hier", WINDOW_NORMAL);
-
+    int teller = 0;
 	while (true)
 	{
+        
 		setWindowProperty("hier", WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 		//Mat frame = imread("C:/Users/Lucas/Pictures/pen.jpg");
 		//Mat frame2 = imread("C:/Users/Lucas/Pictures/Knipsel.PNG");
@@ -1580,7 +1590,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channels(3);
 		// split img:
 		split(frame, channels);
-        cout << channels[2].at<double>(55, 55) << endl;
+       // cout << channels[2].at<double>(55, 55) << endl;
 		Mat ly1(frame.rows, frame.cols, CV_64FC3);
 		Mat cha1, cha2, cha3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1603,7 +1613,7 @@ int main(int argc, char* argv[])
 		vector<Mat> channelsh(3);
 		// split img:
 		split(frame2, channelsh);
-        cout << channelsh[2].at<double>(55, 55) << endl;
+        //cout << channelsh[2].at<double>(55, 55) << endl;
 		Mat ly2(frame2.rows, frame2.cols, CV_64FC3);
 		Mat chah1, chah2, chah3;
 		// "channels" is a vector of 3 Mat arrays:
@@ -1619,8 +1629,8 @@ int main(int argc, char* argv[])
 			}
 		}
 
-        cout << channelash[2].at<double>(55, 55) << endl;
-        cout << channelas[2].at<double>(55, 55) << endl;
+        //cout << channelash[2].at<double>(55, 55) << endl;
+        //cout << channelas[2].at<double>(55, 55) << endl;
 
 		//merge(channelash, 3, ly2);
 
@@ -1660,7 +1670,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-        cout << channelus[2].at<double>(55, 55) << endl;
+        //cout << channelus[2].at<double>(55, 55) << endl;
 		merge(channelus, 3, x1);
 		x1.convertTo(x1, CV_8UC3);
 
@@ -1686,7 +1696,7 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
-        cout << channelush[2].at<double>(55, 55) << endl;
+       // cout << channelush[2].at<double>(55, 55) << endl;
 		merge(channelush, 3, x2);
 		x2.convertTo(x2, CV_8UC3);
 
@@ -1696,15 +1706,82 @@ int main(int argc, char* argv[])
 		x1.copyTo(res(Rect(0, 0, frame.cols, frame.rows)));
 		x2.copyTo(res(Rect(frame.cols, 0, frame2.cols, frame2.rows)));
 		
+        Mat s1;
+        frame.convertTo(frame, CV_8UC3);
+        absdiff(frame, x1, s1);
+        s1.convertTo(s1, CV_32F);
+        s1 = s1.mul(s1);
+        Scalar s = sum(s1);
+        double sse = s.val[0] + s.val[1] + s.val[2];
+        if (sse <= 1e-10)
+            cout << 0 << endl;
+        else
+        {
+            double  mse = sse / (double)(frame.channels() * frame.total());
+            double psnr = 10.0 * log10((255 * 255) / mse);
+            psnrvector[teller] = psnr;
+           // cout << psnr << endl;
+        }
+        
+        Mat s12;
+        frame2.convertTo(frame2, CV_8UC3);
+        absdiff(frame2, x2, s12);
+        s12.convertTo(s12, CV_32F);
+        s12 = s12.mul(s12);
+        Scalar s2 = sum(s12);
+        double sse2 = s2.val[0] + s2.val[1] + s2.val[2];
+        if (sse2 <= 1e-10)
+            cout << 0 << endl;
+        else
+        {
+            double  mse2 = sse2 / (double)(frame2.channels() * frame2.total());
+            double psnr2 = 10.0 * log10((255 * 255) / mse2);
+            psnrvector2[teller] = psnr2;
+           // cout << psnr2 << endl;
+        }
+        
+        
 
+        //cout << "mssim: " << (getMSSIM(frame, x1)[0] + getMSSIM(frame, x1)[0]  + getMSSIM(frame, x1)[0])/3 << endl;
+        MSSIMvector[teller] = (getMSSIM(frame, x1)[0] + getMSSIM(frame, x1)[1] + getMSSIM(frame, x1)[2]) / 3;
+        MSSIMvector2[teller] = (getMSSIM(frame2, x2)[0] + getMSSIM(frame2, x2)[1] + getMSSIM(frame2, x2)[2]) / 3;
+        teller = teller + 1;
 		imshow("hier", res);
+        
 		if (waitKey(1000 / fps) == 27)
 		{
 			cout << "Esc key is pressed by user. Stopping the video" << endl;
-			break;
+            
+            break;
 		}
+        
 	}
-
+    cout << "psnr" << endl;
+    double som = 0;
+    double som2 = 0;
+    double som3 = 0;
+    double som4 = 0;
+    for (size_t jj = 0; jj < cap.get(CAP_PROP_FRAME_COUNT); jj++) {
+        cout << psnrvector[jj] << "  " << jj << ' ';
+        som = som + psnrvector[jj];
+    }
+    for (size_t jj = 0; jj < cap.get(CAP_PROP_FRAME_COUNT); jj++) {
+        cout << MSSIMvector[jj] << "  " << jj << ' ';
+        som2 = som2 + MSSIMvector[jj];
+    }
+    for (size_t jj = 0; jj < cap.get(CAP_PROP_FRAME_COUNT); jj++) {
+        cout << psnrvector2[jj] << "  " << jj << ' ';
+        som3 = som3 + psnrvector2[jj];
+    }
+    for (size_t jj = 0; jj < cap.get(CAP_PROP_FRAME_COUNT); jj++) {
+        cout << MSSIMvector2[jj] << "  " << jj << ' ';
+        som4 = som4 + MSSIMvector2[jj];
+    }
+    cout << endl << "average: PSNR =" << som/ cap.get(CAP_PROP_FRAME_COUNT) << endl;
+    cout << endl << "average: MSSIM = " << som2 / cap.get(CAP_PROP_FRAME_COUNT) << endl;
+    cout << endl << "average2: PSNR =" << som3 / cap.get(CAP_PROP_FRAME_COUNT) << endl;
+    cout << endl << "average2: MSSIM = " << som4 / cap.get(CAP_PROP_FRAME_COUNT) << endl;
+    
 	waitKey(0);
 	return 0;
 
@@ -1796,4 +1873,43 @@ double g2l(int grayinput, int kanaal)
     }
 
     return abs(Uit);
+}
+
+Scalar getMSSIM(const Mat& i1, const Mat& i2)
+{
+    const double C1 = 6.5025, C2 = 58.5225;
+    
+    int d = CV_32F;
+    Mat I1;
+    Mat I2;
+        i1.convertTo(I1, d) ;
+        i2.convertTo(I2, d);
+        Mat I2_2 = I2.mul(I2);        // I2^2
+    Mat I1_2 = I1.mul(I1);        // I1^2
+    Mat I1_I2 = I1.mul(I2);
+    Mat mu1, mu2;   // PRELIMINARY COMPUTING
+    GaussianBlur(I1, mu1, Size(11, 11), 1.5);
+    GaussianBlur(I2, mu2, Size(11, 11), 1.5);
+    Mat mu1_2 = mu1.mul(mu1);
+    Mat mu2_2 = mu2.mul(mu2);
+    Mat mu1_mu2 = mu1.mul(mu2);
+     Mat sigma1_2, sigma2_2, sigma12;
+        GaussianBlur(I1_2, sigma1_2, Size(11, 11), 1.5);
+    sigma1_2 -= mu1_2;
+        GaussianBlur(I2_2, sigma2_2, Size(11, 11), 1.5);
+    sigma2_2 -= mu2_2;
+        GaussianBlur(I1_I2, sigma12, Size(11, 11), 1.5);
+    sigma12 -= mu1_mu2;
+    Mat t1, t2, t3;
+        t1 = 2 * mu1_mu2 + C1;
+    t2 = 2 * sigma12 + C2;
+    t3 = t1.mul(t2);
+        t1 = mu1_2 + mu2_2 + C1;
+    t2 = sigma1_2 + sigma2_2 + C2;
+    t1 = t1.mul(t2);
+    Mat ssim_map;
+    divide(t3, t1, ssim_map);
+    Scalar mssim = mean(ssim_map) * 100; // mssim = average of ssim map
+
+    return mssim;
 }
