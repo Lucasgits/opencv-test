@@ -1543,8 +1543,8 @@ int main(int argc, char* argv[])
 {
     //cout << l2g(0.4454, 0) << endl;
     double r = 0.225;
-	VideoCapture cap("C:/Users/Lucas/Downloads/homer1.mp4");
-	VideoCapture cap2("C:/Users/Lucas/Downloads/homer1mirrored.mp4");
+	VideoCapture cap("C:/Users/Lucas/Downloads/Jellyfish_360_10s_20MB.mp4");
+	VideoCapture cap2("C:/Users/Lucas/Downloads/Big_Buck_Bunny_360_10s_20MB.mp4");
 
 	if (cap.isOpened() == false || cap2.isOpened() == false)
 	{
